@@ -60,6 +60,9 @@ jobs:
         service: [backend, frontend]
     steps:
       - uses: actions/checkout@v4
+      # GHCR requires lowercase repository names; the owner login may be mixed-case.
+      - name: Lowercase image owner
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -70,5 +73,5 @@ jobs:
           context: ./${{ matrix.service }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/volt-grid-${{ matrix.service }}:latest
-            ghcr.io/${{ github.repository_owner }}/volt-grid-${{ matrix.service }}:${{ github.sha }}
+            ghcr.io/${{ env.OWNER_LC }}/volt-grid-${{ matrix.service }}:latest
+            ghcr.io/${{ env.OWNER_LC }}/volt-grid-${{ matrix.service }}:${{ github.sha }}
